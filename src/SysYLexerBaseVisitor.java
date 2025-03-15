@@ -1,5 +1,7 @@
 // Generated from C:/Users/tao/Downloads/ainit-v3/Lab/src/SysYLexer.g4 by ANTLR 4.13.2
 
+package simpleexpr;
+
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

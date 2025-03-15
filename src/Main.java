@@ -1,6 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Listner extends BaseErrorListener
+class Listener extends BaseErrorListener
 {
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         String formattedString = String.format("Error type A at Line %d: %s", line, msg);
@@ -36,12 +37,12 @@ public class Main
         //String source = args[0];
         String source = new String("tests/test1.sysy");
         CharStream input = CharStreams.fromFileName(source);
-        SysYLexerLexer sysYLexer = new SysYLexerLexer(input);
-        sysYLexer.removeErrorListeners();
-        Listner myErrorListener = new Listner();
-        sysYLexer.addErrorListener(myErrorListener);
-        List<? extends Token> myTokens = sysYLexer.getAllTokens();
-        Map<String, Integer> mp = sysYLexer.getTokenTypeMap();
+        simpleexpr.SysYLexerLexer lexerLexer = new simpleexpr.SysYLexerLexer(input);
+        lexerLexer.removeErrorListeners();
+        Listener myErrorListener = new Listener();
+        lexerLexer.addErrorListener(myErrorListener);
+        List<? extends Token> myTokens = lexerLexer.getAllTokens();
+        Map<String, Integer> mp = lexerLexer.getTokenTypeMap();
         Map<Integer, String> mp2 = new HashMap<Integer, String>();
         for (String key : mp.keySet()) {
             Integer value = mp.get(key);
@@ -56,6 +57,12 @@ public class Main
             String formattedString = String.format("%s %s at Line %d.", typeString, token.getText(), line);
             System.out.println(formattedString);
         }
+
+        simpleexpr.SysYParser sysYParser = new simpleexpr.SysYParser(new CommonTokenStream(lexerLexer));
+
+        ParseTree tree = sysYParser.program();
+        simpleexpr.SysYParserBaseVisitor visitor = new simpleexpr.SysYParserBaseVisitor();
+        visitor.visit(tree);
     }
 }
 

@@ -8,7 +8,7 @@ options {
     tokenVocab = SysYLexer;
 }
 
-program: compUnit;
+program: compUnit EOF ;
 
 compUnit:  (decl | funcDef) (decl | funcDef)* SEMI ;
 decl: constDecl | varDecl ;
@@ -16,7 +16,7 @@ constDecl: CONST BType constDef (COMMA constDef )* SEMI ;
 constDef: IDENT ( LBR constExp RBR )* ASSIGN constInitVal SEMI ;
 constInitVal: constExp | LB ( constInitVal (COMMA constInitVal )* )? RB ;
 varDecl: BType varDef (COMMA varDef )* SEMI ;
-varDef: IDENT (LBR constExp RBR )* | IDENT (LBR constExp RBR )* ASSIGN initVal;
+varDef: IDENT (LBR constExp RBR )* | IDENT (LBR constExp RBR )* ASSIGN initVal ;
 initVal: exp | LB (initVal (COMMA initVal )* )? RB ;
 funcDef: funcType IDENT LPAREN funcFParams? RPAREN block ;
 funcType: VOID | BType ;
@@ -54,4 +54,3 @@ lAndExp: eqExp (AND eqExp)*;
 //LOrExp: LAndExp | LOrExp '||' LAndExp;
 lOrExp:  lAndExp (OR lAndExp)* ;
 constExp: addExp;
-
