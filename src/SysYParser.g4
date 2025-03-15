@@ -8,12 +8,12 @@ options {
     tokenVocab = SysYLexer;
 }
 
-program: compUnit EOF ;
+program: compUnit ;
 
-compUnit:  (decl | funcDef) (decl | funcDef)* SEMI ;
+compUnit:  (decl | funcDef)+ EOF ;
 decl: constDecl | varDecl ;
 constDecl: CONST BType constDef (COMMA constDef )* SEMI ;
-constDef: IDENT ( LBR constExp RBR )* ASSIGN constInitVal SEMI ;
+constDef: IDENT ( LBR constExp RBR )* ASSIGN constInitVal ;
 constInitVal: constExp | LB ( constInitVal (COMMA constInitVal )* )? RB ;
 varDecl: BType varDef (COMMA varDef )* SEMI ;
 varDef: IDENT (LBR constExp RBR )* | IDENT (LBR constExp RBR )* ASSIGN initVal ;
@@ -22,35 +22,56 @@ funcDef: funcType IDENT LPAREN funcFParams? RPAREN block ;
 funcType: VOID | BType ;
 funcFParams:  funcFParam (COMMA funcFParam )* ;
 //FuncFParam: BType IDENT  [ '[' ']' { '[' Exp ']' } ];
-funcFParam: BType IDENT arrayDim* ;
-arrayDim  : LBR exp? RBR ;
-block: LB  blockItem* RB ;
+funcFParam: BType IDENT ( LBR RBR (LBR exp RBR) * ) ? ;
+block: LB  (blockItem)* RB ;
 blockItem: decl | stmt;
-stmt: lVal ASSIGN exp SEMI | exp? SEMI | block
+stmt: lVal ASSIGN exp SEMI | (exp)? SEMI | block
 | IF LPAREN cond RPAREN stmt (ELSE stmt)?
 | WHILE LPAREN cond RPAREN stmt
 | BREAK SEMI | CONTINUE SEMI
-| RETURN exp? SEMI ;
+| RETURN (exp)? SEMI ;
 
-exp: addExp;
-cond: lOrExp;
-lVal: IDENT (LBR exp RBR )*;
-primaryExp: LPAREN exp RPAREN | lVal | NUMBER;
 
-unaryExp: primaryExp | IDENT LPAREN funcRParams? RPAREN
-| unaryOp unaryExp;
-unaryOp: ADD | SUB | EXC;
-funcRParams: exp (COMMA exp )*;
-//MulExp: UnaryExp | MulExp ('*' | '/' | '%') UnaryExp;
-mulExp: unaryExp ((MUL | DIV | MOD) unaryExp)*;
-//AddExp: MulExp | AddExp ('+' | '-') MulExp;
-addExp: mulExp ((ADD | SUB) mulExp)*;
-//RelExp: AddExp | RelExp ('<' | '>' | '<=' | '>=' ) AddExp;
-relExp: addExp ((LESS | BIGGER | LE | GE ) addExp)*;
-//EqExp: RelExp | EqExp ('==' | '!=') RelExp;
-eqExp: relExp ((EQU | NEQ) relExp)*;
-//LAndExp: EqExp | LAndExp '&&' EqExp;
-lAndExp: eqExp (AND eqExp)*;
-//LOrExp: LAndExp | LOrExp '||' LAndExp;
-lOrExp:  lAndExp (OR lAndExp)* ;
-constExp: addExp;
+exp
+   : LPAREN exp RPAREN
+   | lVal
+   | number
+   | IDENT LPAREN funcRParams? RPAREN
+   | unaryOp exp
+   | exp (MUL | DIV | MOD) exp
+   | exp (PLUS | MINUS) exp
+   ;
+
+cond
+   : exp
+   | cond (LT | GT | LE | GE) cond
+   | cond (EQ | NEQ) cond
+   | cond AND cond
+   | cond OR cond
+   ;
+
+lVal
+   : IDENT (LBR exp RBR)*
+   ;
+
+number
+   : IntConst
+   ;
+
+unaryOp
+   : PLUS
+   | MINUS
+   | NOT
+   ;
+
+funcRParams
+   : param (COMMA param)*
+   ;
+
+param
+   : exp
+   ;
+
+constExp
+   : exp
+   ;
