@@ -10,13 +10,17 @@ options {
 
 program: compUnit ;
 
-compUnit:  (decl | funcDef)+ EOF ;
+compUnit: (decl | funcDef)* EOF ;  // 允许空文件
+
 decl: constDecl | varDecl ;
-constDecl: CONST BType constDef (COMMA constDef )* SEMI ;
-constDef: IDENT ( LBR constExp RBR )* ASSIGN constInitVal ;
+
+constDecl: CONST BType constDef (COMMA constDef)* SEMI ;
+constDef: IDENT (LBR constExp RBR)* ASSIGN constInitVal ;
 constInitVal: constExp | LB ( constInitVal (COMMA constInitVal )* )? RB ;
-varDecl: BType varDef (COMMA varDef )* SEMI ;
-varDef: IDENT (LBR constExp RBR )* | IDENT (LBR constExp RBR )* ASSIGN initVal ;
+
+varDecl: BType varDef (COMMA varDef)* SEMI ;  // 分号结束
+varDef: IDENT (LBR constExp RBR)* (ASSIGN initVal)? ; // 合并分支
+
 initVal: exp | LB (initVal (COMMA initVal )* )? RB ;
 funcDef: funcType IDENT LPAREN funcFParams? RPAREN block ;
 funcType: VOID | BType ;
