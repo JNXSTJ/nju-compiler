@@ -53,12 +53,12 @@ OctalConst: '0' OctalDigit*;
 //HexadecimalConst: HexadecimalPrefix HexadecimalDigit | HexadecimalConst HexadecimalDigit ;
 HexadecimalConst: HexadecimalPrefix HexadecimalDigit+;
 
-WS : [ \t\r\n]+ -> skip ;
+WS : [ \t\r\n]+ -> channel(HIDDEN) ;
 
-SL_COMMENT : '//' .*? '\n' -> skip ;
+SL_COMMENT : '//' .*? '\n' -> channel(HIDDEN) ;
 //SL_COMMENT2 : '//' ~[\n]* '\n' -> skip;
-DOC_COMMENT : '/**' .*? '*/' -> skip ;
-ML_COMMENT : '/*' .*? '*/' -> skip ;
+DOC_COMMENT : '/**' .*? '*/' -> channel(HIDDEN) ;
+ML_COMMENT : '/*' .*? '*/' -> channel(HIDDEN) ;
 
 fragment LETTER : [a-zA-Z] ;
 fragment DIGIT : [0-9] ;

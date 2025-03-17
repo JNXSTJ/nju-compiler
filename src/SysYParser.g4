@@ -12,28 +12,69 @@ program: compUnit ;
 
 compUnit: (decl | funcDef)* EOF ;  // 允许空文件
 
-decl: constDecl | varDecl ;
+decl
+    : constDecl
+    | varDecl
+    ;
 
-constDecl: CONST BType constDef (COMMA constDef)* SEMI ;
-constDef: IDENT (LBR constExp RBR)* ASSIGN constInitVal ;
-constInitVal: constExp | LB ( constInitVal (COMMA constInitVal )* )? RB ;
+constDecl
+    : CONST BType constDef (COMMA constDef)* SEMI ;
+constDef
+    : IDENT (LBR constExp RBR)* ASSIGN constInitVal ;
+constInitVal
+    : constExp
+    | LB ( constInitVal (COMMA constInitVal )* )? RB
+    ;
 
-varDecl: BType varDef (COMMA varDef)* SEMI ;  // 分号结束
-varDef: IDENT (LBR constExp RBR)* (ASSIGN initVal)? ; // 合并分支
+varDecl
+    : BType varDef (COMMA varDef)* SEMI ;  // 分号结束
 
-initVal: exp | LB (initVal (COMMA initVal )* )? RB ;
-funcDef: funcType IDENT LPAREN funcFParams? RPAREN block ;
-funcType: VOID | BType ;
-funcFParams:  funcFParam (COMMA funcFParam )* ;
-//FuncFParam: BType IDENT  [ '[' ']' { '[' Exp ']' } ];
-funcFParam: BType IDENT ( LBR RBR (LBR exp RBR) * ) ? ;
-block: LB  (blockItem)* RB ;
-blockItem: decl | stmt;
-stmt: lVal ASSIGN exp SEMI | (exp)? SEMI | block
-| IF LPAREN cond RPAREN stmt (ELSE stmt)?
-| WHILE LPAREN cond RPAREN stmt
-| BREAK SEMI | CONTINUE SEMI
-| RETURN (exp)? SEMI ;
+varDef
+    : IDENT (LBR constExp RBR)* (ASSIGN initVal)?
+    ; // 合并分支
+
+initVal
+    : exp
+    | LB (initVal (COMMA initVal )* )? RB
+    ;
+
+funcName: IDENT;
+
+funcDef
+    : funcType funcName LPAREN funcFParams? RPAREN block
+    ;
+
+funcType
+    : VOID
+    | BType
+    ;
+
+funcFParams
+    : funcFParam (COMMA funcFParam )*
+    ;
+
+funcFParam
+    : BType IDENT ( LBR RBR (LBR exp RBR) * ) ?
+    ;
+
+block
+    : LB (blockItem)* RB
+    ;
+
+blockItem
+    : decl
+    | stmt
+    ;
+
+stmt
+    : lVal ASSIGN exp SEMI
+    | (exp)? SEMI
+    | block
+    | IF LPAREN cond RPAREN stmt (ELSE stmt)?
+    | WHILE LPAREN cond RPAREN stmt
+    | BREAK SEMI | CONTINUE SEMI
+    | RETURN (exp)? SEMI
+    ;
 
 
 exp
